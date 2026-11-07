@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Desafio de Geografia — 6º Ano (Sistema Anglo)</title>
+    <style>
+        :root {
+            --primary: #0f766e;
+            --primary-light: #0d9488;
+            --bg: #f0fdf4;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #cbd5e1;
+            --correct-bg: #dcfce7;
+            --correct-border: #22c55e;
+            --correct-text: #15803d;
+            --wrong-bg: #fee2e2;
+            --wrong-border: #ef4444;
+            --wrong-text: #b91c1c;
+            --hint-bg: #fef3c7;
+            --hint-border: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 12px;
+        }
+
+        .quiz-container {
+            width: 100%;
+            max-width: 540px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-icon {
+            font-size: 2.2rem;
+        }
+
+        .header-info h1 {
+            font-size: 1.35rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .header-info p {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .progress-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 3.33%;
+            background: var(--primary-light);
+            transition: width 0.3s ease;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .tag {
+            align-self: flex-start;
+            background: #ccfbf1;
+            color: #0f766e;
+            border: 1px solid #99f6e4;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.4;
+            white-space: pre-line;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 0.88rem;
+            color: var(--text);
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            line-height: 1.35;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .option-btn:active {
+            background-color: #f1f5f9;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-bg) !important;
+            border-color: var(--correct-border) !important;
+            color: var(--correct-text) !important;
+            font-weight: 600;
+        }
+
+        .option-btn.wrong {
+            background-color: var(--wrong-bg) !important;
+            border-color: var(--wrong-border) !important;
+            color: var(--wrong-text) !important;
+        }
+
+        .footer-hint-section {
+            margin-top: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .hint-btn {
+            background: transparent;
+            border: none;
+            color: #d97706;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-align: left;
+            padding: 2px 0;
+            display: inline-block;
+        }
+
+        .hint-box {
+            background: var(--hint-bg);
+            border: 1px solid var(--hint-border);
+            color: #78350f;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            line-height: 1.35;
+            display: none;
+        }
+
+        .feedback-box {
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            line-height: 1.35;
+            display: none;
+        }
+
+        .feedback-box.correct {
+            background: var(--correct-bg);
+            border: 1px solid var(--correct-border);
+            color: var(--correct-text);
+        }
+
+        .feedback-box.wrong {
+            background: var(--wrong-bg);
+            border: 1px solid var(--wrong-border);
+            color: var(--wrong-text);
+        }
+
+        .feedback-box strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .action-btn {
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        .results-screen {
+            text-align: center;
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            padding: 10px 0;
+        }
+
+        .score-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .score-circle span {
+            font-size: 0.75rem;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <!-- Cabeçalho -->
+    <div class="header">
+        <div class="header-icon">🌍</div>
+        <div class="header-info">
+            <h1>Desafio de Geografia</h1>
+            <p>6º Ano — Sistema Anglo (Módulos 12, 13 e 14)</p>
+        </div>
+    </div>
+
+    <div id="quiz-screen" style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Progresso -->
+        <div class="progress-box">
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-stats">
+                <span id="question-number">Questão 1 de 30</span>
+                <span id="score-text">0 acertos</span>
+            </div>
+        </div>
+
+        <div class="tag" id="module-tag">Módulo</div>
+
+        <div class="question-text" id="question-text">Carregando pergunta...</div>
+
+        <!-- Opções -->
+        <div class="options-container" id="options-container"></div>
+
+        <!-- Dica e Feedback -->
+        <div class="footer-hint-section">
+            <button class="hint-btn" id="hint-toggle-btn" onclick="toggleHint()">💡 Precisa de uma dica?</button>
+            <div class="hint-box" id="hint-box"></div>
+        </div>
+
+        <div class="feedback-box" id="feedback-box"></div>
+
+        <button class="action-btn" id="next-btn" onclick="handleNextAction()">Próxima Questão</button>
+    </div>
+
+    <!-- Tela Final -->
+    <div class="results-screen" id="results-screen">
+        <h2>🎉 Desafio Concluído!</h2>
+        <p>Você respondeu a todas as questões de Geografia para o 3º Trimestre!</p>
+        <div class="score-circle" id="final-score">
+            0/30
+            <span>Acertos</span>
+        </div>
+        <p id="final-message">Excelente dedicação nos estudos!</p>
+        <button class="action-btn" onclick="restartQuiz()">🔄 Reiniciar Quiz</button>
+    </div>
+</div>
+
+<script>
+var questions = [
+    // --- MÓDULO 12: PAISAGENS VEGETAIS DO BRASIL (1 a 10) ---
+    {
+        module: "Módulo 12 — Paisagens Vegetais do Brasil",
+        question: "1. A cobertura vegetal original de um local é determinada principalmente por fatores naturais. No entanto, a ação humana alterou profundamente essas formações. Quais os principais fatores naturais e a proporção de alteração antrópica no Brasil?",
+        options: [
+            "a) Altitude e vento; com menos de 10% de alteração humana",
+            "b) Clima e solo; sendo que mais de 50% da vegetação original já foi alterada pela ação humana",
+            "c) Latitude e marés; com vegetação 100% preservada nas cidades",
+            "d) Relevo e vulcanismo; sem nenhuma interferência das atividades econômicas"
+        ],
+        correct: 1,
+        hint: "Pense no tipo de tempo (temperatura/chuvas) e no chão onde as raízes crescem, além do impacto de estradas e cidades.",
+        explanation: "O clima e o solo são os fatores determinantes para o surgimento da vegetação nativa. No Brasil, mais de 50% da vegetação original foi transformada (antropizada) por queimadas, desmatamento, agricultura e expansão urbana."
+    },
+    {
+        module: "Módulo 12 — Paisagens Vegetais do Brasil",
+        question: "2. A Floresta Equatorial Amazônica é a maior floresta tropical do planeta. Suas principais características climáticas e estruturais incluem:",
+        options: [
+            "a) Clima temperado seco, árvores baixas e folhas que caem no inverno",
+            "b) Clima equatorial (quente e úmido), folhas sempre verdes (latifoliadas) e floresta densa com vários estratos de árvores",
+            "c) Clima semiárido, presença exclusiva de cactos e solo de dunas",
+            "d) Clima polar, vegetação de musgos e ausência de afluentes fluviais"
+        ],
+        correct: 1,
+        hint: "A Amazônia fica perto da Linha do Equador, onde chove muito o ano todo e as árvores têm folhas largas que não caem.",
+        explanation: "Devido ao clima equatorial quente e muito úmido, a Floresta Amazônica é ombrófila (amiga da chuva), densa, fechada e latifoliada (folhas largas e sempre verdes)."
+    },
+    {
+        module: "Módulo 12 — Paisagens Vegetais do Brasil",
+        question: "3. A Mata Atlântica se estendia originalmente pelo litoral brasileiro do RN ao RS. Por que ela é considerada um 'Hotspot' de biodiversidade?",
+        options: [
+            "a) Porque possui vulcanismo ativo e temperaturas acima de 50°C",
+            "b) Porque é uma formação vegetal artificial plantada recentemente",
+            "c) Porque possui altíssima biodiversidade com espécies exclusivas, mas sofreu destruição histórica restando menos de 10% da área original",
+            "d) Porque é um deserto de areia onde não existem animais nativos"
+        ],
+        correct: 2,
+        hint: "Hotspot = área rica em vida nativa ameaçada de extinção extrema devido ao desmatamento histórico.",
+        explanation: "Desde o período colonial (pau-brasil, cana, café e urbanização), a Mata Atlântica foi devastada. Por ser extremamente rica em biodiversidade e restarem apenas pequenos fragmentos, é classificada como Hotspot."
+    },
+    {
+        module: "Módulo 12 — Paisagens Vegetais do Brasil",
+        question: "4. A Mata dos Pinhais (Mata de Araucárias) é uma formação subtropical típica do Sul do Brasil. Qual a situação atual desse ecossistema?",
+        options: [
+            "a) Está totalmente preservada e cobre 100% da Região Sul",
+            "b) Foi substituída por vegetação de caatinga e dunas de areia",
+            "c) Resta menos de 5% da sua cobertura original devido à intensa exploração de madeira e agricultura",
+            "d) É a maior floresta equatorial de várzea do planeta"
+        ],
+        correct: 2,
+        hint: "O pinheiro-do-paraná foi muito explorado para corte de madeira e celulose no século XX.",
+        explanation: "A extração de madeira (Araucaria angustifolia) para construção e móveis, aliada à expansão agropecuária, reduziu a Mata de Araucárias a menos de 5% do seu habitat original."
+    },
+    {
+        module: "Módulo 12 — Paisagens Vegetais do Brasil",
+        question: "5. A Mata dos Cocais é uma mata de transição entre a Amazônia e a Caatinga, localizada no Maranhão e Piauí. Suas palmeiras principais e uso econômico são:",
+        options: [
+            "a) Eucalipto e pinus; usados para extração de carvão mineral",
+            "b) Babaçu e carnaúba; utilizadas no extrativismo vegetal para óleo, ceras, sabões e cosméticos",
+            "c) Cacau e seringueira; utilizadas para produção de borracha sintética",
+            "d) Macieiras e videiras; voltadas à fabricação artesanal de sucos"
+        ],
+        correct: 1,
+        hint: "Lembre-se das quebradeiras de coco e da 'árvore da vida' da qual se extrai cera das folhas.",
+        explanation: "As palmeiras de Babaçu e Carnaúba são a base do extrativismo sustentável regional. O babaçu fornece óleo e castanha; a carnaúba fornece a cera usada na indústria de alimentos e cosméticos."
+    },
+    {
+        module: "Módulo 12 — Paisagens Vegetais do Brasil",
+        question: "6. O Cerrado é a segunda maior formação vegetal do Brasil, adaptado ao clima Tropical Típico. Como as plantas se adaptaram a esse clima?",
+        options: [
+            "a) Desenvolveram folhas gigantescas e espessas para absorver o gelo do inverno",
+            "b) Apresentam árvores de troncos e galhos retorcidos, cascas grossas e raízes profundas para buscar água no subsolo durante o inverno seco",
+            "c) São gramíneas aquáticas flutuantes que não possuem raízes no solo",
+            "d) São vegetações de manguezal que sobrevivem em água salgada"
+        ],
+        correct: 1,
+        hint: "O clima do Cerrado tem duas estações bem definidas: verão chuvoso e inverno seco. As raízes parecem 'árvores de ponta-cabeça'.",
+        explanation: "As cascas grossas protegem contra queimadas naturais, os galhos retorcidos adaptam-se ao solo ácido e as raízes profundas alcancam o lençol freático no período de estiagem."
+    },
+    {
+        module: "Módulo 12 — Paisagens Vegetais do Brasil",
+        question: "7. A Caatinga é um bioma exclusivo do Brasil, adaptado ao clima semiárido do Sertão Nordestino. Por que ela é chamada de 'Mata Branca' pelos indígenas?",
+        options: [
+            "a) Porque fica coberta de neve durante os meses de junho e julho",
+            "b) Porque na época de seca as plantas perdem as folhas (caducifólias), revelando os troncos esbranquiçados",
+            "c) Porque o solo é formado por blocos de calcário brilhante",
+            "d) Porque é composta exclusivamente por plantações de algodão"
+        ],
+        correct: 1,
+        hint: "Perder as folhas (caducifolia) é uma estratégia para economizar água e não transpirar no calor.",
+        explanation: "Em tupi-guarani, Caatinga significa 'Mata Branca'. Durante a longa estiagem, a vegetação perde a folhagem verde para evitar a perda de água pela transpiração, deixando a paisagem acinzentada/esbranquiçada."
+    },
+    {
+        module: "Módulo 12 — Paisagens Vegetais do Brasil",
+        question: "8. Os Campos Sulinos (Pampas), encontrados no Rio Grande do Sul, caracterizam-se por:",
+        options: [
+            "a) Florestas tropicais densas e impenetráveis com cipós",
+            "b) Vegetação rasteira predominantemente composta por gramíneas, sendo uma excelente pastagem natural",
+            "c) Cactos gigantescos e árvores sem folhas o ano todo",
+            "d) Palmeiras de cocais adaptadas ao clima equatorial úmido"
+        ],
+        correct: 1,
+        hint: "Pense na paisagem tradicional do gaúcho para a criação de gado bovino sobre o relevo suave (coxilhas).",
+        explanation: "Os Pampas possuem vegetação herbácea (herbanço e gramíneas) que cobre o relevo ondulado, tornando a região ideal para a pecuária extensiva."
+    },
+    {
+        module: "Módulo 12 — Paisagens Vegetais do Brasil",
+        question: "9. Sobre o Pantanal e os Manguezais, assinale a alternativa que descreve corretamente essas áreas úmidas:",
+        options: [
+            "a) O Pantanal é um bioma de dunas secas e o manguezal ocorre no topo das serras geladas",
+            "b) O Pantanal é a maior planície alagável de água doce do mundo, e os manguezais são berçários marinhos de solos salobros com raízes aéreas",
+            "c) Ambos são ecossistemas de deserto sem presença de água",
+            "d) Os manguezais são florestas plantadas no interior da Amazônia para extração de borracha"
+        ],
+        correct: 1,
+        hint: "O Pantanal alaga com a cheia dos rios; o mangue é a zona de transição entre rio e mar onde caranguejos se reproduzem.",
+        explanation: "O Pantanal forma um mosaico vegetal em uma grande planície alagável. O manguezal é um ecossistema litorâneo salobro essencial para a reprodução de espécies marinhas (berçário)."
+    },
+    {
+        module: "Módulo 12 — Paisagens Vegetais do Brasil",
+        question: "10. Qual a diferença conceitual entre o termo 'Bioma' (segundo a classificação do IBGE) e 'Área Antropizada'?",
+        options: [
+            "a) Bioma é uma cidade moderna; Área Antropizada é uma floresta intocada",
+            "b) Bioma é um conjunto de vida vegetal e animal com características comuns; Área Antropizada é o espaço alterado pela ação humana",
+            "c) Ambos significam exatamente a mesma coisa na ciência geográfica",
+            "d) Bioma refere-se apenas aos oceanos; Área Antropizada refere-se às estrelas"
+        ],
+        correct: 1,
+        hint: "Antrópico vem da palavra grega para 'humano'. Lembre-se do que a humanidade constrói sobre a natureza.",
+        explanation: "Bioma é uma grande unidade biológica regional com condições de clima, solo e vegetação semelhantes. Área Antropizada é o espaço onde a paisagem natural foi modificada pelo trabalho e intervenção humana."
+    },
+
+    // --- MÓDULO 13: ÁGUAS DO MUNDO E DO BRASIL (11 a 20) ---
+    {
+        module: "Módulo 13 — Águas do Mundo e do Brasil",
+        question: "11. A origem da água na Terra é explicada pela ciência, e sua distribuição é muito desigual. Assinale a afirmação correta sobre esse recurso:",
+        options: [
+            "a) A água é 100% doce e potável em todos os rios do mundo",
+            "b) A água surgiu pela desgaseificação vulcânica e impactos de cometas; 97,5% é salgada e o Brasil detém entre 12% e 16% da água doce do mundo",
+            "c) O Brasil não possui reservas de água doce por causa do clima árido",
+            "d) Os oceanos contêm apenas 2,5% da água total do planeta"
+        ],
+        correct: 1,
+        hint: "A Terra acumulou vapor d'água de vulcões e cometas. O Brasil é privileged por ter rios gigantes como o Amazonas.",
+        explanation: "Do total de água do planeta, 97,5% está nos oceanos (salgada). Apenas 2,5% é água doce. O Brasil é uma potência hídrica, abrigando cerca de 12% a 16% dessa reserva doce mundial."
+    },
+    {
+        module: "Módulo 13 — Águas do Mundo e do Brasil",
+        question: "12. Nas cidades, a substituição da vegetação por asfalto e cimento altera o ciclo hidrológico. Qual o impacto direto desse processo estudado na Atividade 1?",
+        options: [
+            "a) Aumento da infiltração da água e recarga dos aquíferos",
+            "b) Redução imediata da temperatura das ruas",
+            "c) Impermeabilização do solo, diminuindo a infiltração e aumentando o escoamento superficial, o que causa enchentes e alagamentos",
+            "d) Formação de novas geleiras nos centros urbanos"
+        ],
+        correct: 2,
+        hint: "O asfalto impede que a água da chuva entre na terra. Para onde vai essa água que sobrou?",
+        explanation: "A pavimentação impede a absorção da água pelo solo (impermeabilização). A água corre rapidamente pelas superfícies (escoamento superficial), superlotando bueiros e rios urbanos, gerando enchentes."
+    },
+    {
+        module: "Módulo 13 — Águas do Mundo e do Brasil",
+        question: "13. O que é o 'Divisor de Águas' de uma bacia hidrográfica e qual a diferença entre rios perenes e intermitentes?",
+        options: [
+            "a) Divisor de águas é a foz do rio; rios perenes secam no verão e intermitentes congelam no inverno",
+            "b) Divisor de águas é o topo do relevo que separa bacias; rios perenes correm o ano todo e intermitentes secam no período de estiagem",
+            "c) Divisor de águas é uma nuvem de chuva; rios perenes são artificiais e intermitentes não existem",
+            "d) Divisor de águas é um aquífero subterrâneo sem ligação com o relevo"
+        ],
+        correct: 1,
+        hint: "As partes mais altas das montanhas orientam para qual lado a chuva vai escorrer.",
+        explanation: "O divisor de águas (interflúvio) é a linha de crista do relevo que delimita as bacias. Rios perenes mantêm fluxo contínuo; rios temporários/intermitentes secam durante as secas severas."
+    },
+    {
+        module: "Módulo 13 — Águas do Mundo e do Brasil",
+        question: "14. Um rio pode desaguar no mar de diferentes formas. Como se diferenciam a 'Foz em Estuário' e a 'Foz em Delta'?",
+        options: [
+            "a) Estuário possui múltiplos canais com ilhas; Delta possui um único canal livre",
+            "b) Estuário deságua em um único canal desobstruído; Delta deságua por vários canais ramificados devido ao acúmulo de sedimentos",
+            "c) Ambas deságuam exclusivamente dentro de cavernas subterrâneas",
+            "d) Delta é uma nascente de montanha e Estuário é um lago artificial"
+        ],
+        correct: 1,
+        hint: "Delta lembra a letra grega em leque (vários braços de rio); Estuário é uma 'boca' aberta única.",
+        explanation: "Na foz em estuário, o rio encontra o mar através de uma boca larga e limpa. Na foz em delta, a deposição de sedimentos cria ilhas, forçando o rio a se dividir em vários braços em formato de leque."
+    },
+    {
+        module: "Módulo 13 — Águas do Mundo e do Brasil",
+        question: "15. Qual atividade humana é responsável pelo maior consumo de água doce no mundo e no Brasil, atingindo cerca de 70% do total?",
+        options: [
+            "a) Lavagem de carros e uso doméstico urbano",
+            "b) Agropecuária, principalmente através da irrigação lavouras",
+            "c) Indústria de videogames e tecnologia",
+            "d) Geração de energia nuclear em usinas"
+        ],
+        correct: 1,
+        hint: "Pense na quantidade de água necessária para regar grandes lavouras de grãos e dar de beber aos animais.",
+        explanation: "A agropecuária consome cerca de 70% da água doce captada no mundo, superando a indústria (22%) e o consumo doméstico/urbano (8%). A irrigação é o fator principal."
+    },
+    {
+        module: "Módulo 13 — Águas do Mundo e do Brasil",
+        question: "16. O infográfico da página 286 apresenta o conceito de 'Água Virtual'. Esse termo refere-se a:",
+        options: [
+            "a) Água que existe apenas dentro de jogos de computador",
+            "b) A quantidade invisível de água utilizada em toda a cadeia de produção de um bem ou alimento",
+            "c) O vapor de água presente na atmosfera que não pode ser tocado",
+            "d) Água salgada purificada por usinas espaciais"
+        ],
+        correct: 1,
+        hint: "Para produzir 1 kg de carne ou uma calça jeans, milhares de litros de água foram gastos no processo produtivo.",
+        explanation: "Água Virtual é a água 'embutida' nos produtos. Nós não a vemos diretamente no produto final, mas ela foi consumida para cultivar matérias-primas, alimentar animais ou processar bens nas indústrias."
+    },
+    {
+        module: "Módulo 13 — Águas do Mundo e do Brasil",
+        question: "17. Para garantir a navegação fluvial em rios de planalto que possuem barragens ou desníveis naturais, são construídas obras de engenharia chamadas:",
+        options: [
+            "a) Aquedutos romanos de elevação",
+            "b) Eclusas, que funcionam como 'elevadores de água' com comportas para subir ou descer embarcações",
+            "c) Pontes estaiadas submersas",
+            "d) Drenos horizontais de profundidade"
+        ],
+        correct: 1,
+        hint: "O navio entra em uma câmara, a água sobe (ou desce) até o nível do outro trecho do rio e a comporta abre.",
+        explanation: "As eclusas são sistemas de degraus com comportas que enchem ou esvaziam de água, permitindo que os navios vençam os desníveis (degraus) de rios de planalto e barragens de hidrelétricas."
+    },
+    {
+        module: "Módulo 13 — Águas do Mundo e do Brasil",
+        question: "18. Qual a diferença marcante entre a Matriz Elétrica do Brasil e a Matriz Elétrica Mundial?",
+        options: [
+            "a) O Brasil usa 100% de carvão; o mundo usa apenas energia eólica",
+            "b) O Brasil possui matriz predominantemente limpa e renovável (65,2% hidrelétrica); a matriz mundial baseia-se em fontes não renováveis (carvão e gás)",
+            "c) Ambos dependem exclusivamente de painéis solares espaciais",
+            "d) O mundo produz energia apenas com força humana e o Brasil com petróleo"
+        ],
+        correct: 1,
+        hint: "O Brasil aproveita o grande volume e o relevo de seus rios de planalto para gerar luz.",
+        explanation: "Enquanto a maior parte da eletricidade do mundo vem da queima de combustíveis fósseis poluentes (carvão e gás), o Brasil destaca-se pelo uso da energia hidráulica dos seus rios (65,2%)."
+    },
+    {
+        module: "Módulo 13 — Águas do Mundo e do Brasil",
+        question: "19. Assinale a associação correta entre a Bacia Hidrográfica brasileira e sua principal característica econômica/geográfica:",
+        options: [
+            "a) Bacia do Paraná - Maior potencial de geração elétrica (abriga a Usina de Itaipu) e a Hidrovia Tietê-Paraná",
+            "b) Bacia Amazônica - Bacia com menor volume de água do planeta",
+            "c) Bacia do São Francisco - Localizada no Sul, não possui trechos navegáveis",
+            "d) Bacia do Tocantins-Araguaia - Não possui usinas hidrelétricas construídas"
+        ],
+        correct: 0,
+        hint: "Esta bacia drena a região mais populosa e industrializada do Sudeste e Sul do Brasil.",
+        explanation: "A Bacia do Paraná corta o centro-sul do país, sendo a campeã nacional em geração de energia elétrica (Usinas de Itaipu, Porto Primavera, etc.) e transporte de grãos via Hidrovia Tietê-Paraná."
+    },
+    {
+        module: "Módulo 13 — Águas do Mundo e do Brasil",
+        question: "20. O subsolo brasileiro abriga reservas gigantescas de água doce subterrânea conhecidas como Aquíferos. As duas maiores são:",
+        options: [
+            "a) Aquífero do Saara e Reservatório dos Andes",
+            "b) Aquífero Guarani (em rochas porosas no Centro-Sul) e Sistema Aquático Grande Amazônia (SAGA)",
+            "c) Poço de Mariana e Bacia Subterrânea do Atacama",
+            "d) Reservatório de Glaciares do Rio de Janeiro"
+        ],
+        correct: 1,
+        hint: "Um fica no Centro-Sul abaixo da Bacia do Paraná; o outro fica sob a floresta Amazônica.",
+        explanation: "Os aquíferos são rochas porosas que funcionam como esponjas acumuladoras de água da chuva subterrânea. O Brasil abriga o Guarani e o SAGA, duas das maiores reservas subterrâneas do planeta."
+    },
+
+    // --- MÓDULO 14: DOMÍNIO DA NATUREZA (21 a 30) ---
+    {
+        module: "Módulo 14 — Domínio da Natureza",
+        question: "21. No período Paleolítico (Idade da Pedra Lascada), a relação dos seres humanos com a natureza caracterizava-se por:",
+        options: [
+            "a) Construção de grandes cidades industriais com poluição do ar",
+            "b) Modo de vida nômade, baseado na caça e coleta, alterando muito pouco o meio ambiente sob o ritmo natural",
+            "c) Produção intensiva de trigo e milho com tratores de ferro",
+            "d) Uso de aviões e transatlânticos para viagens de comércio"
+        ],
+        correct: 1,
+        hint: "Os humanos caçavam e coletavam o que a natureza oferecia; quando o alimento acabava, mudavam de lugar.",
+        explanation: "No Paleolítico, os grupos humanos eram nômades e dependiam diretamente do clima e da disponibilidade natural de frutos e animais, sem capacidade de modificar profundamente as paisagens."
+    },
+    {
+        module: "Módulo 14 — Domínio da Natureza",
+        question: "22. A domesticação dos primeiros animais (como cães, ovelhas e bovinos) ocorreu há cerca de 16 mil anos. Quais foram as consequências desse processo?",
+        options: [
+            "a) Fim da vida em sociedade e extinção do Homo sapiens",
+            "b) Alteração genética/física nos animais domesticados e adaptação do organismo humano para digerir lactose (leite)",
+            "c) Destruição imediata de todas as florestas do planeta",
+            "d) Surgimento imediato da eletricidade e da tecnologia digital"
+        ],
+        correct: 1,
+        hint: "O convívio com os animais mudou a estrutura deles e permitiu ao ser humano alimentar-se de leite na fase adulta.",
+        explanation: "A domesticação alterou o tamanho e comportamento dos animais (gerando raças dependentes do homem) e promoveu seleções evolutivas no próprio corpo humano, como a tolerância ao leite."
+    },
+    {
+        module: "Módulo 14 — Domínio da Natureza",
+        question: "23. A Revolução Agrícola (Neolítico), ocorrida há 10-12 mil anos na região do Crescente Fértil, provocou uma transformação crucial na humanidade:",
+        options: [
+            "a) O aumento do nomadismo para caçar mamutes",
+            "b) A Sedentarização humana, permitindo a fixação em vilas, aumento populacional e seleção de sementes (trigo, arroz e milho)",
+            "c) A substituição de casas por cavernas de gelo",
+            "d) O fim de qualquer tipo de plantação de vegetais"
+        ],
+        correct: 1,
+        hint: "Ao aprender a plantar, o ser humano não precisava mais vagar em busca de comida, podendo morar em um local fixo.",
+        explanation: "O domínio da agricultura levou à Sedentarização (criação de vilas fixas). As plantas selecionadas no Neolítico (como trigo, milho e arroz) continuam sendo a base da alimentação global até hoje."
+    },
+    {
+        module: "Módulo 14 — Domínio da Natureza",
+        question: "24. A Revolução Industrial, iniciada no século XVIII na Inglaterra, acelerou o domínio e a degradação da natureza devido a:",
+        options: [
+            "a) Uso exclusivo de tração animal e energia solar pura",
+            "b) Produção mecânica em massa, queima intensiva de carvão, urbanização acelerada, êxodo rural e acúmulo de lixo urbano",
+            "c) Redução drástica do consumo de recursos minerais no mundo",
+            "d) Proibição do funcionamento de máquinas nas cidades"
+        ],
+        correct: 1,
+        hint: "As indústrias trouxeram chaminés, fumaça, consumo exagerado de matérias-primas e muito lixo.",
+        explanation: "A industrialização multiplicou a capacidade humana de transformar o espaço. A queima de combustíveis fósseis (carvão) e a cultura do consumo geraram poluição, êxodo rural e o problema moderno do lixo."
+    },
+    {
+        module: "Módulo 14 — Domínio da Natureza",
+        question: "25. A ocupação humana na Terra é desigual. O que são 'Áreas Ecúmenas'?",
+        options: [
+            "a) Regiões inóspitas congeladas onde ninguém consegue morar",
+            "b) Regiões da superfície terrestre com condições favoráveis (clima ameno, água, solos férteis) intensamente habitadas",
+            "c) Crateras vulcânicas no fundo do oceano",
+            "d) Espaços construídos fora do planeta Terra"
+        ],
+        correct: 1,
+        hint: "Cerca de 2/3 das terras emersas possuem clima bom, rios e litoral, acolhendo a maioria das pessoas.",
+        explanation: "Áreas Ecúmenas são espaços habitáveis e amigáveis ao desenvolvimento humano, onde o clima, a disponibilidade hídrica e a topografia facilitam a fixação de cidades e cidades."
+    },
+    {
+        module: "Módulo 14 — Domínio da Natureza",
+        question: "26. Por outro lado, cerca de 1/3 das terras do planeta correspondem a 'Áreas Anecúmenas'. O que caracteriza essas regiões?",
+        options: [
+            "a) Zonas urbanas superpovoadas com grandes edifícios",
+            "b) Regiões de difícil ocupação humana devido a obstáculos naturais severos (frio polar, deserto seco, altitude elevada)",
+            "c) Praias tropicais de águas mornas lotadas de turistas",
+            "d) Lavouras de soja totalmente irrigadas por pivô central"
+        ],
+        correct: 1,
+        hint: "Pense no frio da Antártida, no calor do Saara ou no topo do Everest.",
+        explanation: "Áreas Anecúmenas são locais hostis à fixação humana fixa devido a condições extremas da natureza (ex.: Antártida, Deserto do Saara, altas montanhas e florestas hiperdensas)."
+    },
+    {
+        module: "Módulo 14 — Domínio da Natureza",
+        question: "27. Os recursos naturais necessários para a vida dividem-se em Bióticos e Abióticos, além de Renováveis e Não Renováveis. Assinale a opção correta:",
+        options: [
+            "a) Petróleo é um recurso biótico renovável que se regenera em 2 dias",
+            "b) Bióticos são seres vivos (florestas/animais); Abióticos são elementos não vivos (água/minérios); Petróleo é Não Renovável",
+            "c) Sol e vento são recursos não renováveis que vão acabar amanhã",
+            "d) Minério de ferro é um recurso vivo que cresce como uma planta"
+        ],
+        correct: 1,
+        hint: "Bio = vida (plantas, animais). Abiótico = sem vida (rochas, luz solar, água). Combustíveis fósseis demoram milhões de anos para se formar.",
+        explanation: "Recursos Bióticos derivam da matéria viva. Recursos Abióticos são elementos físico-químicos. O petróleo é um combustível fóssil esgotável (não renovável na escala de tempo humana)."
+    },
+    {
+        module: "Módulo 14 — Domínio da Natureza",
+        question: "28. O conceito universal de 'Desenvolvimento Sustentável' pressupõe:",
+        options: [
+            "a) Consumir todos os recursos de forma rápida antes que os outros países os peguem",
+            "b) Atender às necessidades do presente sem comprometer a capacidade das gerações futuras de atenderem às suas próprias necessidades",
+            "c) Parar totalmente o uso de tecnologia e voltar a morar em cavernas",
+            "d) Queimar todas as florestas para construir usinas elétricas de carvão"
+        ],
+        correct: 1,
+        hint: "Sustentabilidade é usar a natureza com responsabilidade para que os seus filhos e netos também tenham recursos.",
+        explanation: "Formulado no relatório 'Nosso Futuro Comum', o Desenvolvimento Sustentável busca equilibrar o crescimento econômico, a preservação ambiental e o bem-estar social para o presente e o futuro."
+    },
+    {
+        module: "Módulo 14 — Domínio da Natureza",
+        question: "29. Na gestão ambiental moderna, a 'Regra dos 3Rs' estabelece uma hierarquia de ações (Reduzir, Reutilizar e Reciclar). Qual ação é a de prioridade nº 1?",
+        options: [
+            "a) Reciclar latas de alumínio após o consumo excessivo",
+            "b) REDUZIR o consumo e a geração de lixo, pois evita o gasto prévio de energia e matérias-primas",
+            "c) Queimar embalagens de plástico no quintal de casa",
+            "d) Aumentar a compra de produtos descartáveis de uso único"
+        ],
+        correct: 1,
+        hint: "A melhor forma de não ter lixo é evitar comprar coisas desnecessárias em primeiro lugar.",
+        explanation: "Na hierarquia dos 3Rs, a ação mais importante e prioritária é REDUZIR. Se consumirmos menos, diminuímos a extração de matérias-primas, o gasto de energia na produção e a geração final de resíduos."
+    },
+    {
+        module: "Módulo 14 — Domínio da Natureza",
+        question: "30. Por que pilhas, baterias de celular e aparelhos eletrônicos não podem ser descartados no lixo comum das nossas casas?",
+        options: [
+            "a) Porque eles flutuam e sobem para as nuvens de chuva",
+            "b) Porque contêm metais pesados tóxicos (chumbo, mercúrio, cádmio) que podem vazar, contaminando o solo e o lençol freático",
+            "c) Porque são feitos de matéria orgânica biodegradável que estraga o composto",
+            "d) Porque podem se transformar em plantas carnívoras no aterro sanitário"
+        ],
+        correct: 1,
+        hint: "Esses objetos possuem compostos químicos venenosos que poluem a água subterrânea que bebemos.",
+        explanation: "Eletrônicos contêm metais pesados altamente tóxicos. No lixo comum, eles se rompem nos aterros, infiltrando resíduos perigosos no solo e alcançando a água doce dos aquíferos."
+    }
+];
+
+var currentIndex = 0;
+var score = 0;
+var answered = false;
+
+function renderOptions(q) {
+    var container = document.getElementById("options-container");
+    container.innerHTML = "";
+    
+    for (var i = 0; i < q.options.length; i++) {
+        var btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.setAttribute("type", "button");
+        btn.innerText = q.options[i];
+        (function(index) {
+            btn.onclick = function() { selectOption(index); };
+        })(i);
+        container.appendChild(btn);
+    }
+}
+
+function loadQuestion() {
+    answered = false;
+    var q = questions[currentIndex];
+
+    // Atualiza progresso e estatísticas
+    document.getElementById("progress-fill").style.width = (((currentIndex + 1) / questions.length) * 100) + "%";
+    document.getElementById("question-number").innerText = "Questão " + (currentIndex + 1) + " de " + questions.length;
+    document.getElementById("score-text").innerText = score + " acertos";
+    document.getElementById("module-tag").innerText = q.module;
+    document.getElementById("question-text").innerText = q.question;
+
+    // Reseta dica
+    var hintBox = document.getElementById("hint-box");
+    hintBox.style.display = "none";
+    hintBox.innerText = q.hint;
+
+    // Reseta feedback
+    var feedbackBox = document.getElementById("feedback-box");
+    feedbackBox.style.display = "none";
+    feedbackBox.className = "feedback-box";
+
+    renderOptions(q);
+
+    var nextBtn = document.getElementById("next-btn");
+    nextBtn.innerText = (currentIndex === questions.length - 1) ? "Ver Resultado Final" : "Próxima Questão";
+    nextBtn.style.display = "none";
+}
+
+function toggleHint() {
+    var hintBox = document.getElementById("hint-box");
+    hintBox.style.display = (hintBox.style.display === "block") ? "none" : "block";
+}
+
+function selectOption(selectedIndex) {
+    if (answered) return;
+    answered = true;
+
+    var q = questions[currentIndex];
+    var optionBtns = document.querySelectorAll(".option-btn");
+    var feedbackBox = document.getElementById("feedback-box");
+    var nextBtn = document.getElementById("next-btn");
+
+    for (var i = 0; i < optionBtns.length; i++) {
+        optionBtns[i].disabled = true;
+    }
+
+    if (selectedIndex === q.correct) {
+        score++;
+        if (optionBtns[selectedIndex]) optionBtns[selectedIndex].className += " correct";
+        feedbackBox.className = "feedback-box correct";
+        feedbackBox.innerHTML = "<strong>✅ Resposta Correta!</strong>" + q.explanation;
+    } else {
+        if (optionBtns[selectedIndex]) optionBtns[selectedIndex].className += " wrong";
+        if (optionBtns[q.correct]) optionBtns[q.correct].className += " correct";
+        feedbackBox.className = "feedback-box wrong";
+        feedbackBox.innerHTML = "<strong>❌ Alternativa Incorreta</strong>" + q.explanation;
+    }
+
+    feedbackBox.style.display = "block";
+    document.getElementById("score-text").innerText = score + " acertos";
+    nextBtn.style.display = "block";
+}
+
+function handleNextAction() {
+    currentIndex++;
+    if (currentIndex < questions.length) {
+        loadQuestion();
+    } else {
+        showResults();
+    }
+}
+
+function showResults() {
+    document.getElementById("quiz-screen").style.display = "none";
+    var resultsScreen = document.getElementById("results-screen");
+    resultsScreen.style.display = "flex";
+
+    var percent = Math.round((score / questions.length) * 100);
+    document.getElementById("final-score").innerHTML = score + "/30<span>" + percent + "% de Acertos</span>";
+
+    var message = document.getElementById("final-message");
+    if (score >= 26) {
+        message.innerText = "🏆 Sensacional, Beatriz! Você demonstrou domínio total sobre a matéria de Geografia do 6º Ano! Nota 10 garantida!";
+    } else if (score >= 20) {
+        message.innerText = "👏 Muito bom! Você tem ótimos conhecimentos e está super preparada para mandar muito bem na prova!";
+    } else if (score >= 15) {
+        message.innerText = "📚 Bom esforço! Vale a pena dar uma revisada nos módulos em que errou e tentar novamente para gabaritar!";
+    } else {
+        message.innerText = "💪 Não desanime! Revise o material com carinho e faça o quiz de novo para fixar todo o conteúdo!";
+    }
+}
+
+function restartQuiz() {
+    currentIndex = 0;
+    score = 0;
+    document.getElementById("results-screen").style.display = "none";
+    document.getElementById("quiz-screen").style.display = "flex";
+    loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
